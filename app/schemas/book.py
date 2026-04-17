@@ -43,3 +43,11 @@ class ErrorResponse(BaseModel):
     success: bool = False
     message: str
     errors: Optional[Any] = None
+
+
+class PaginatedBooksResponse(BaseModel):
+    success: bool = True
+    data: list[BookResponse]
+    total: int
+    page: int
+    size: int

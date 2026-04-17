@@ -1,17 +1,39 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.models.book import Book
-from app.schemas.book import BookCreate, BookResponse, SuccessResponse
+from app.schemas.book import BookCreate, BookResponse, PaginatedBooksResponse, SuccessResponse
+from app.services.book_service import list_books
 
 router = APIRouter(prefix="/books", tags=["books"])
 
 
-@router.get("", response_model=SuccessResponse)
-def get_books(db: Session = Depends(get_db)):
-    books = db.query(Book).all()
-    return {"success": True, "data": [BookResponse.model_validate(b) for b in books]}
+@router.get("", response_model=PaginatedBooksResponse)
+def get_books(
+    page: int = Query(1, ge=1),
+    size: int = Query(10, ge=1, le=100),
+    author: Optional[str] = None,
+    sort: str = "id",
+    order: str = "asc",
+    db: Session = Depends(get_db),
+):
+    try:
+        books, total = list_books(
+            db, page=page, size=size, author=author, sort=sort, order=order
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    return {
+        "success": True,
+        "data": [BookResponse.model_validate(b) for b in books],
+        "total": total,
+        "page": page,
+        "size": size,
+    }
 
 
 @router.get("/{book_id}", response_model=SuccessResponse)

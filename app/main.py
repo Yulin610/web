@@ -9,7 +9,7 @@ from app.routes.books import router as books_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Books API MVP", version="1.0.0")
+app = FastAPI(title="Books API", version="3.0.0")
 app.include_router(books_router)
 
 
