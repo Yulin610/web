@@ -1,4 +1,4 @@
-# 图书 API 课程作业（V3 专业版）  
+# 图书 API 课程作业（V4 增强版）  
 基于 FastAPI + SQLite 开发，使用 Goodreads 图书数据集（`archive/books.csv`）。  
   
 ## 项目与数据集  
@@ -11,7 +11,7 @@
 - SQLite：轻量 SQL 数据库，便于演示与评分  
 - SQLAlchemy：ORM 数据模型映射  
   
-## V1–V3 实现功能  
+## V1–V4 实现功能  
 - 数据库初始化  
 - 图书数据模型  
 - CSV 数据导入脚本  
@@ -30,6 +30,19 @@
 - 分页 + 筛选 + 排序（V3）：  
   - `GET /books?page=1&size=10`  
   - `GET /books?author=Rowling&sort=average_rating&order=desc`  
+- 搜索（V4）：  
+  - `GET /books?search=harry`  
+- 统计接口（V4）：  
+  - `GET /stats/average-rating`  
+  - `GET /stats/top-books`  
+  - `GET /stats/books-per-year`  
+- API Key 鉴权（V4）：  
+  - 请求头：`x-api-key: cw1-secret-key`（默认值，可用环境变量 `BOOKS_API_KEY` 覆盖）  
+- 请求日志（V4）：  
+  - 记录请求路径、状态码、耗时（ms）  
+- 数据库索引（V4）：  
+  - `idx_title` on `title`  
+  - `idx_rating` on `average_rating`  
   
 ## 项目结构  
 ```  
@@ -63,10 +76,14 @@ uvicorn app.main:app --reload
 ## API 示例  
 - `GET /books?page=1&size=10`：获取图书列表（V3 分页）  
 - `GET /books?author=Rowling&sort=average_rating&order=desc`：筛选 + 排序（V3）  
+- `GET /books?search=harry`：按标题搜索（V4）  
 - `GET /books/{id}`：获取单本图书  
 - `POST /books`：添加图书  
 - `PUT /books/{id}`：更新图书（V2）  
 - `DELETE /books/{id}`：删除图书  
+- `GET /stats/average-rating`：全量图书平均评分（V4）  
+- `GET /stats/top-books?limit=10`：高评分图书（V4）  
+- `GET /stats/books-per-year`：各年份图书数量（V4）  
 
 ## 状态码约定（V2）
 - 200 OK：查询/更新/删除成功
@@ -84,6 +101,17 @@ uvicorn app.main:app --reload
   "page": 1,
   "size": 10
 }
+```
+
+## 鉴权说明（V4）
+除根路径 `/` 和文档页面外，业务接口需带 API Key 请求头：
+```http
+x-api-key: cw1-secret-key
+```
+
+可通过环境变量修改默认密钥：
+```bash
+set BOOKS_API_KEY=your_key
 ```
   
 ## AI 使用声明  

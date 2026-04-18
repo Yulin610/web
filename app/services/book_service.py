@@ -25,6 +25,7 @@ def list_books(
     page: int,
     size: int,
     author: Optional[str] = None,
+    search: Optional[str] = None,
     sort: str = "id",
     order: str = "asc",
 ) -> Tuple[list[Book], int]:
@@ -42,6 +43,10 @@ def list_books(
         if author:
             # SQLite doesn't support ILIKE; use lower() comparison.
             q = q.filter(func.lower(Book.authors).like(f"%{author.lower()}%"))
+    if search:
+        search = search.strip()
+        if search:
+            q = q.filter(func.lower(Book.title).like(f"%{search.lower()}%"))
 
     total = q.count()
 

@@ -5,10 +5,11 @@ from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.models.book import Book
+from app.security.api_key import require_api_key
 from app.schemas.book import BookCreate, BookResponse, PaginatedBooksResponse, SuccessResponse
 from app.services.book_service import list_books
 
-router = APIRouter(prefix="/books", tags=["books"])
+router = APIRouter(prefix="/books", tags=["books"], dependencies=[Depends(require_api_key)])
 
 
 @router.get("", response_model=PaginatedBooksResponse)
@@ -16,13 +17,14 @@ def get_books(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
     author: Optional[str] = None,
+    search: Optional[str] = None,
     sort: str = "id",
     order: str = "asc",
     db: Session = Depends(get_db),
 ):
     try:
         books, total = list_books(
-            db, page=page, size=size, author=author, sort=sort, order=order
+            db, page=page, size=size, author=author, search=search, sort=sort, order=order
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

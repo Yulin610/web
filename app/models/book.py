@@ -1,10 +1,14 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import Column, Float, Index, Integer, String
 
 from app.database.connection import Base
 
 
 class Book(Base):
     __tablename__ = "books"
+    __table_args__ = (
+        Index("idx_title", "title"),
+        Index("idx_rating", "average_rating"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False, index=True)
