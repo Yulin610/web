@@ -72,6 +72,15 @@ python import_books.py
 uvicorn app.main:app --reload  
 ```  
 4. 文档地址`http://127.0.0.1:8000/docs`  
+
+## 交付物（提交到 GitHub）
+- **代码仓库**：本项目全部代码（可运行）
+- **API 文档（可导出 PDF）**：`docs/API_Documentation.md`（导出后为 `docs/API_Documentation.pdf`）
+- **技术报告（≤5页，可导出 PDF）**：`docs/Technical_Report.md`（导出后为 `docs/Technical_Report.pdf`）
+- **人工测试手册**：`archive/reports/Manual_Test_Guide.md`
+- **V1–V4 阶段报告**：`archive/reports/V2_Completion_Report.md`、`archive/reports/V3_Completion_Report.md`、`archive/reports/V4_Completion_Report.md`
+- **PPT 生成 prompt**：`docs/PPT_Generation_Prompt.md`
+- **导出 PDF 操作**：`docs/EXPORT_TO_PDF.md`
   
 ## API 示例  
 - `GET /books?page=1&size=10`：获取图书列表（V3 分页）  
