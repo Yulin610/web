@@ -1,61 +1,61 @@
 # Stage V4 Completion Report (Advanced Features)
 
 ## 1) Stage V4 Goal
-实现高级能力，用于拉开 70 与 80+ 的差距：
-- 搜索功能
-- 统计 API
-- 数据库索引
-- API Key 安全机制
-- 请求日志系统
+Demonstrate advanced features (to differentiate higher marks):
+- Search
+- Statistics APIs
+- Database indexes
+- API-key security
+- Request logging
 
 ## 2) Implemented Features
 
 ### 2.1 Search (Implemented)
-在统一列表接口中增加搜索参数：
+Added a search parameter to the unified list endpoint:
 - `GET /books?search=harry`
 
-实现细节：
-- 在 `app/services/book_service.py` 中对 `title` 做大小写不敏感匹配。
-- 与已有 `author/sort/order/page/size` 可同时使用。
+Details:
+- Implemented case-insensitive matching on `title` in `app/services/book_service.py`.
+- Can be combined with `author/sort/order/page/size`.
 
 ### 2.2 Stats APIs (Implemented)
-新增路由：`app/routes/stats.py`
+New router: `app/routes/stats.py`
 
-已实现接口：
+Implemented endpoints:
 - `GET /stats/average-rating`
-  - 返回全库平均评分
+  - returns average rating across the whole dataset
 - `GET /stats/top-books?limit=10`
-  - 返回评分最高图书列表
+  - returns the top-rated books list
 - `GET /stats/books-per-year`
-  - 从 `publication_date` 解析年份，统计各年份图书数
+  - parses year from `publication_date` and aggregates books per year
 
-服务层实现：
+Service implementation:
 - `app/services/stats_service.py`
 
 ### 2.3 Database Indexes (Implemented)
-按任务要求创建并保证现有库可落地：
+Created required indexes and ensured they apply to an existing SQLite DB:
 - `CREATE INDEX IF NOT EXISTS idx_title ON books(title);`
 - `CREATE INDEX IF NOT EXISTS idx_rating ON books(average_rating);`
 
-位置：
-- `app/main.py` 启动阶段执行
+Location:
+- executed on startup in `app/main.py`
 
-说明：
-- 数据列名实际为 `average_rating`，因此 `idx_rating` 建在该列上。
+Note:
+- The actual rating column is `average_rating`, so `idx_rating` is created on that column.
 
 ### 2.4 API Key Security (Implemented)
-新增简单鉴权机制：
+Added a simple API-key mechanism:
 - Header: `x-api-key`
-- 默认密钥：`cw1-secret-key`
-- 可由环境变量 `BOOKS_API_KEY` 覆盖
+- Default key: `cw1-secret-key`
+- Can be overridden by environment variable `BOOKS_API_KEY`
 
-实现：
+Implementation:
 - `app/security/api_key.py`
-- 在 `books` 与 `stats` 路由上统一挂载依赖
+- applied as a shared dependency on both `books` and `stats` routers
 
-行为：
-- 缺失或错误 key -> `401 Unauthorized`
-- 错误格式：
+Behavior:
+- missing/invalid key -> `401 Unauthorized`
+- unified error JSON:
 ```json
 {
   "success": false,
@@ -64,23 +64,23 @@
 ```
 
 ### 2.5 Logging System (Implemented)
-在 `app/main.py` 增加 HTTP middleware，记录：
-- 请求路径
-- 状态码
-- 耗时（ms）
+Added an HTTP middleware in `app/main.py` that logs:
+- request path
+- status code
+- duration (ms)
 
-日志示例（本地测试）：
+Example log line:
 - `path=/books status=200 duration_ms=...`
 
 ## 3) Verification Summary
-本地冒烟测试已通过：
+Local smoke tests passed:
 - `GET /books?page=1&size=3&search=harry` -> 200
 - `GET /stats/average-rating` -> 200
 - `GET /stats/top-books?limit=2` -> 200
 - `GET /stats/books-per-year` -> 200
-- 不带 API key 调用业务接口 -> 401
+- calling business endpoints without API key -> 401
 
-同时验证索引存在：
+Indexes verified:
 - `idx_title`
 - `idx_rating`
 
@@ -104,4 +104,10 @@ GenAI used for:
 - generating and structuring the V4 report text
 
 All outputs were manually reviewed, executed, and adjusted in the local project.
+
+## 6) Deliverables & Links
+- **GitHub repository**: `https://github.com/Yulin610/web`
+- **API documentation (PDF)**: `https://github.com/Yulin610/web/blob/main/docs/API_Documentation.pdf`
+- **Technical report (PDF)**: `https://github.com/Yulin610/web/blob/main/docs/Technical_Report.pdf`
+- **Defense PPT (PPTX)**: `https://github.com/Yulin610/web/blob/main/docs/Books_API_Coursework_Defense.pptx`
 

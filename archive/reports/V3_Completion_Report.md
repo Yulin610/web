@@ -1,15 +1,15 @@
 # Stage V3 Completion Report (RESTful + Pagination + Filter/Sort + Modularization)
 
 ## 1) Stage V3 Goal
-达到可提交水平：
-- RESTful 统一设计（已遵循）
-- 列表接口分页（`page`/`size` + 返回 `total/page/size`）
-- 筛选 + 排序（合并在 `GET /books`）
-- 更清晰的模块化结构（新增 `services/`）
-- Swagger 可用（FastAPI `/docs`）
+Bring the project to a **submission-ready** level:
+- Unified RESTful design (consistent routes)
+- Pagination on list endpoint (`page`/`size` with `total/page/size` in the response)
+- Filtering + sorting combined on `GET /books`
+- Clear modular structure (introduce `services/`)
+- Swagger available via FastAPI (`/docs`)
 
 ## 2) RESTful API Design (Implemented)
-统一接口：
+Unified routes:
 - `GET /books`
 - `GET /books/{id}`
 - `POST /books`
@@ -48,12 +48,12 @@ Allowed sort fields:
 Invalid `sort` or `order` returns **400 Bad Request** with unified error response.
 
 ## 5) Modular Structure (Implemented)
-新增服务层：
+Added a service layer:
 - `app/services/book_service.py`
 
-职责：
-- 构建 SQLAlchemy 查询（分页/筛选/排序）
-- 返回 `(items, total)` 给路由层
+Responsibilities:
+- build SQLAlchemy queries (pagination/filter/sort)
+- return `(items, total)` back to the routes layer
 
 Project structure now includes:
 ```
@@ -86,4 +86,10 @@ GenAI used for:
 - drafting the V3 completion report
 
 All outputs were manually reviewed and tested locally.
+
+## 9) Deliverables & Links
+- **GitHub repository**: `https://github.com/Yulin610/web`
+- **API documentation (PDF)**: `https://github.com/Yulin610/web/blob/main/docs/API_Documentation.pdf`
+- **Technical report (PDF)**: `https://github.com/Yulin610/web/blob/main/docs/Technical_Report.pdf`
+- **Defense PPT (PPTX)**: `https://github.com/Yulin610/web/blob/main/docs/Books_API_Coursework_Defense.pptx`
 

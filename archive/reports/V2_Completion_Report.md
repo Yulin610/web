@@ -1,37 +1,37 @@
-# Stage V2 Completion Report (CRUD + Validation +规范化响应)
+# Stage V2 Completion Report (CRUD + Validation + Unified Responses)
 
 ## 1) Stage V2 Goal
-在 V1 可运行的基础上，使 API **更规范**：
-- 补全 CRUD（新增 `PUT /books/{id}`）
-- 加入数据验证（Pydantic）
-- 状态码符合要求（200/201/400/404）
-- 统一响应格式（成功/失败）
-- 数据清洗更完善（去重、空值处理、rating 转 float）
+Starting from the runnable V1 MVP, Stage V2 aims to make the API **correct and consistent** (coursework-quality):
+- Complete CRUD by adding `PUT /books/{id}`
+- Add request validation (Pydantic)
+- Follow required HTTP status codes (200/201/400/404)
+- Use a unified JSON response wrapper for both success and error
+- Improve import-time data cleaning (deduplication, null handling, numeric casting)
 
 ## 2) Implemented Changes
 
-### 2.1 CRUD 完整
-新增接口：
-- `PUT /books/{id}`：更新指定图书
+### 2.1 Complete CRUD
+Added:
+- `PUT /books/{id}`: update an existing book
 
-### 2.2 数据验证（Pydantic）
-在 `app/schemas/book.py` 中实现：
-- `title`：必填且不能是空字符串（`min_length=1` + 去空格校验）
-- `average_rating`：范围限制 **0–5**（`ge=0, le=5`）
+### 2.2 Validation (Pydantic)
+Implemented in `app/schemas/book.py`:
+- `title`: required and must not be blank (min length + strip validation)
+- `average_rating`: must be within **0–5** (`ge=0, le=5`)
 
-说明：
-- 当请求体不合法时，系统会返回 **400 Bad Request**（见异常处理）。
+Behavior:
+- Invalid request bodies return **400 Bad Request** (coursework requirement).
 
-### 2.3 HTTP 状态码规范
-已对齐课程要求：
-- `GET /books`：200 OK
-- `GET /books/{id}`：200 OK / 404 Not Found
-- `POST /books`：201 Created / 400 Bad Request
-- `PUT /books/{id}`：200 OK / 400 Bad Request / 404 Not Found
-- `DELETE /books/{id}`：200 OK / 404 Not Found
+### 2.3 HTTP status codes
+Aligned with coursework requirements:
+- `GET /books`: `200 OK`
+- `GET /books/{id}`: `200 OK` / `404 Not Found`
+- `POST /books`: `201 Created` / `400 Bad Request`
+- `PUT /books/{id}`: `200 OK` / `400 Bad Request` / `404 Not Found`
+- `DELETE /books/{id}`: `200 OK` / `404 Not Found`
 
-### 2.4 统一响应格式（重要）
-成功返回：
+### 2.4 Unified response wrapper (important)
+Success:
 ```json
 {
   "success": true,
@@ -39,7 +39,7 @@
 }
 ```
 
-失败返回：
+Error (example):
 ```json
 {
   "success": false,
@@ -47,29 +47,29 @@
 }
 ```
 
-当请求体校验失败时（400）：
+Validation error (400):
 ```json
 {
   "success": false,
   "message": "Bad Request",
-  "errors": [...]
+  "errors": []
 }
 ```
 
-实现方式：
-- 在 `app/main.py` 中增加了全局异常处理：
-  - `RequestValidationError` -> 400 + 统一错误结构
-  - `HTTPException` -> 404/400 等 + 统一错误结构
+Implementation:
+- Added global exception handlers in `app/main.py`:
+  - `RequestValidationError` -> `400` with unified structure
+  - `HTTPException` -> `404/400/...` with unified structure
 
-### 2.5 数据清洗（导入阶段）
-在 `import_books.py` 中增强：
-- 去重：按 `bookID` 去重（重复 id 跳过）
-- 处理空值：
-  - 空 `title`：跳过导入
-  - 空 `authors`：写入 `Unknown`
-- 数值清洗：
+### 2.5 Import-time data cleaning
+Enhanced in `import_books.py`:
+- Deduplication: skip duplicate `bookID`
+- Null/empty handling:
+  - skip empty `title`
+  - default empty `authors` to `Unknown`
+- Numeric casting:
   - `average_rating` -> float
-  - `num_pages/ratings_count/bookID` -> int（无法转换则为 None 或跳过）
+  - `num_pages/ratings_count/bookID` -> int (fallback to None or skip invalid rows)
 
 ## 3) Files Changed / Added
 - Updated:
@@ -80,10 +80,16 @@
 - Added:
   - `archive/reports/V2_Completion_Report.md`
 
-## 4) GenAI Usage Statement (Required)
-GenAI used for:
-- V2 requirements mapping into concrete FastAPI implementation tasks
-- drafting validation + unified response + exception handler patterns
+## 4) Deliverables & Links
+- **GitHub repository**: `https://github.com/Yulin610/web`
+- **API documentation (PDF)**: `https://github.com/Yulin610/web/blob/main/docs/API_Documentation.pdf`
+- **Technical report (PDF)**: `https://github.com/Yulin610/web/blob/main/docs/Technical_Report.pdf`
+- **Defense PPT (PPTX)**: `https://github.com/Yulin610/web/blob/main/docs/Books_API_Coursework_Defense.pptx`
+
+## 5) GenAI Usage Statement (Required)
+GenAI was used for:
+- mapping V2 requirements into concrete FastAPI tasks
+- drafting validation + unified response + exception-handler patterns
 - drafting report content
 
 All outputs were manually reviewed and executed locally, and adjusted to match `archive/books.csv` fields and coursework rules.
